@@ -1,15 +1,15 @@
 # ansible_redis_sentinel
 此文档用于说明通过ansible+docker-compose快速搭建一主两从redis+三sentinel集群的操作，此项目适用于三台服务器设备。
 
-## 示例服务器列表
+# 1.示例服务器列表
 
 ![img](https://i-blog.csdnimg.cn/direct/b74cdabc5c8c469a8be4e1490bac85b4.png)
 
-# 大致架构逻辑
+# 2.大致架构逻辑
 
 ![img](https://i-blog.csdnimg.cn/direct/e66236daca6c4c4789201a813967067b.png)
 
-# 安装前
+# 3.安装前
 
 ## 修改变量文件group_vars/all.yml
 
@@ -44,13 +44,13 @@ redis_slave1
 redis_slave2
 ```
 
-# 安装
+# 4.安装
 
 ```sh
 bash setup.sh
 ```
 
-# 验证redis-master故障转移
+# 5.验证redis-master故障转移
 
 ```sh
 #初始集群信息，test1为master，test2、test3为slave
@@ -94,7 +94,11 @@ Warning: Using a password with '-a' or '-u' option on the command line interface
       3) "87291"
 ```
 
-# 涉及redis镜像(X86版本，Baidu Net Disk)
+# 6.涉及redis镜像(X86版本，Baidu Net Disk)
+
+```sh
+docker load -i redis-727-x86.tgz
+```
 
 redis:7.2.7版本镜像文件：
 
