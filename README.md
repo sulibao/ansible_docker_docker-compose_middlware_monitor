@@ -3,7 +3,7 @@
 
 ## 示例服务器列表
 
-![image-20250402162605988](C:\Users\24107\AppData\Roaming\Typora\typora-user-images\image-20250402162605988.png)
+![img](https://i-blog.csdnimg.cn/direct/b74cdabc5c8c469a8be4e1490bac85b4.png)
 
 # 大致架构逻辑
 
