@@ -1,0 +1,15 @@
+[redis_master]
+192.168.2.190
+[redis_slave1]
+192.168.2.191
+[redis_slave2]
+192.168.2.192
+
+[redis_slave:children]
+redis_slave1
+redis_slave2
+
+[redis:children]
+redis_master
+redis_slave1
+redis_slave2

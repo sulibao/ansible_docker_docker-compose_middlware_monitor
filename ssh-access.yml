@@ -1,0 +1,35 @@
+- hosts: redis
+  tasks:
+  - name: 判断known_hosts文件是否存在 不存在则新建
+    shell:
+      "[ ! -d \"~/.ssh/know_host\" ] && mkdir -p ~/.ssh && touch ~/.ssh/known_hosts"
+
+  - name: 删除~/.ssh/known_hosts已存在的记录
+    command: "sed -i '/{{ item }}/d' ~/.ssh/known_hosts"
+    loop: "{{ groups.all | difference(['localhost']) }}"
+    when:
+      - ansible_facts['distribution'] == "CentOS"
+
+  - name: 在本机执行ssh-keyscan
+    command: "ssh-keyscan -f ~/.ssh/id_rsa_ansible_redis.pub   {{ groups.all | difference(['localhost']) | join(' ') }}"
+    delegate_to: localhost
+    register: new_host
+    ignore_errors: yes
+
+  - name: 将目标主机的指纹录入~/.ssh/known_hosts
+    lineinfile:
+      dest: ~/.ssh/known_hosts
+      line: "{{ item }}"
+    loop: "{{ new_host.stdout_lines }}"
+    delegate_to: localhost
+
+- hosts: "{{ groups.all | difference(['localhost']) }}"
+  gather_facts: no
+  remote_user: root
+  tasks:
+  - name: 传输ssh公钥到目标主机
+    authorized_key:
+      user: root
+      state: present
+      key: "{{ lookup('file', '~/.ssh/id_rsa_ansible_redis.pub') }}"
+  - ping:
