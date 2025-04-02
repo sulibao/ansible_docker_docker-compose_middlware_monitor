@@ -52,7 +52,7 @@ bash setup.sh
 
 # 验证redis-master故障转移
 
-```
+```sh
 #初始集群信息，test1为master，test2、test3为slave
 docker exec -it redis-master bash
 root@test1:/data# redis-cli -a sulibao role
