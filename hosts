@@ -1,8 +1,8 @@
-[redis_master]
+[redis_master]   #初始redis-master的地址
 192.168.2.190
-[redis_slave1]
+[redis_slave1]   #初始redis-slave1的地址
 192.168.2.191
-[redis_slave2]
+[redis_slave2]   #初始redis-slave2的地址
 192.168.2.192
 
 [redis_slave:children]

@@ -1,1 +1,2 @@
 # ansible_redis_sentinel
+此文档用于说明通过ansible+docker-compose快速搭建一主两从redis+三sentinel集群的操作，此项目适用于三台服务器设备。
