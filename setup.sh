@@ -178,12 +178,6 @@ function install_docker_slave() {
   echo -e "\nInstalled docker for slave nodes."
 }
 
-function install_redis() {
-  echo -e "Install redis."
-  docker exec -i ansible_sulibao /bin/sh -c "cd $path && ansible-playbook  ./redis.yml"
-  echo -e "\nInstalled redis."
-}
-
 check_arch
 check_docker
 check_docker_compose
@@ -192,4 +186,3 @@ ensure_ansible
 create_ssh_key
 copy_ssh_key
 install_docker_slave
-install_redis
