@@ -9,18 +9,41 @@ export ansible_image_url_x86="registry.cn-chengdu.aliyuncs.com/su03/ansible:late
 export ansible_image_url_arm="registry.cn-chengdu.aliyuncs.com/su03/ansible-arm:latest"
 export docker_package_url_x86="https://su-package.oss-cn-chengdu.aliyuncs.com/docker/amd/docker-27.2.0.tgz"
 export docker_package_url_arm="https://su-package.oss-cn-chengdu.aliyuncs.com/docker/arm/docker-27.2.0.tgz"
+export target_file_x86="$path/packages/docker/x86/docker-27.2.0.tgz"
+export target_file_arm="$path/packages/docker/arm/docker-27.2.0.tgz"
 ssh_pass="sulibao"
-
 os_arch=$(uname -m)
 
 if [[ "$os_arch" == "x86_64" ]]; then
     ARCH="x86"
     echo -e "Detected Operating System: $OS, Architecture：X86"
     mkdir -p $ansible_log_dir
+    if [ -f "$target_file_x86" ]; then
+      echo "The file $target_file_x86 already exists, skip download."
+    else
+      mkdir -p "$(dirname "$target_file_x86")"
+      curl -C - -o "$target_file_x86" "$docker_package_url_x86"
+      if [ $? -eq 0 ]; then
+        echo "The file downloaded successfully."
+      else
+        echo "Failed to download the file."
+      fi
+    fi
 elif [[ "$os_arch" == "aarch64" ]]; then
     ARCH="arm64"
     echo -e "Detected Operating System: $OS, Architecture: ARM64"
     mkdir -p $ansible_log_dir
+    if [ -f "$target_file_arm" ]; then
+      echo "The file $target_file_arm already exists, skip download."
+    else
+      mkdir -p "$(dirname "$target_file_arm")"
+      curl -C - -o "$target_file_arm" "$docker_package_url_arm"
+      if [ $? -eq 0 ]; then
+        echo "The file downloaded successfully."
+      else
+        echo "Failed to download the file."
+      fi
+    fi
 else
     echo -e "Unsupported architecture detected: $os_arch"
     exit 1
@@ -92,11 +115,11 @@ function install_docker() {
   echo "Installing docker."
   if [[ "$ARCH" == "x86" ]]
   then
-    curl -C - -o $path/packages/docker/x86/docker-27.2.0.tgz $docker_package_url_x86
-    cp -v -f $path/packages/docker/x86/docker-27.2.0.tgz $path/roles/docker/files/x86/docker-27.2.0.tgz
+    export DOCKER_OFFLINE_PACKAGE=$path/packages/docker/x86/docker-27.2.0.tgz && \
+    cp -v -f $target_file_x86 $path/roles/docker/files/x86/docker-27.2.0.tgz
   else
-    curl -C - -o $path/packages/docker/arm64/docker-27.2.0.tgz $docker_package_url_arm
-    cp -v -f $path/packages/docker/arm64/docker-27.2.0.tgz $path/roles/docker/files/arm64/docker-27.2.0.tgz
+    export DOCKER_OFFLINE_PACKAGE=$path/packages/docker/arm64/docker-27.2.0.tgz && \
+    cp -v -f $target_file_x86 $path/roles/docker/files/arm64/docker-27.2.0.tgz
   fi
   tar axvf $DOCKER_OFFLINE_PACKAGE -C /usr/bin/ --strip-components=1
   cp -v -f $path/packages/docker/docker.service /usr/lib/systemd/system/
