@@ -11,10 +11,18 @@ export docker_package_url_x86="https://su-package.oss-cn-chengdu.aliyuncs.com/do
 export docker_package_url_arm="https://su-package.oss-cn-chengdu.aliyuncs.com/docker/arm/docker-27.2.0.tgz"
 export target_file_x86="$path/packages/docker/x86/docker-27.2.0.tgz"
 export target_file_arm="$path/packages/docker/arm/docker-27.2.0.tgz"
-ssh_pass="sulibao"
-os_arch=$(uname -m)
+export ssh_pass="sulibao"
+export os_arch=$(uname -m)
 
-if [[ "$os_arch" == "x86_64" ]]; then
+function get_arch_package() {
+  if [ -f /etc/redhat-release ]; then
+    OS="RedHat"
+  elif [ -f /etc/kylin-release ]; then
+    OS="kylin"
+  else
+    echo "Unknow linux distribution."
+  fi
+  if [[ "$os_arch" == "x86_64" ]]; then
     ARCH="x86"
     echo -e "Detected Operating System: $OS, Architecture：X86"
     mkdir -p $ansible_log_dir
@@ -29,7 +37,7 @@ if [[ "$os_arch" == "x86_64" ]]; then
         echo "Failed to download the file."
       fi
     fi
-elif [[ "$os_arch" == "aarch64" ]]; then
+  elif [[ "$os_arch" == "aarch64" ]]; then
     ARCH="arm64"
     echo -e "Detected Operating System: $OS, Architecture: ARM64"
     mkdir -p $ansible_log_dir
@@ -44,28 +52,9 @@ elif [[ "$os_arch" == "aarch64" ]]; then
         echo "Failed to download the file."
       fi
     fi
-else
+  else
     echo -e "Unsupported architecture detected: $os_arch"
     exit 1
-fi
-
-function check_arch() {
-  if [ -f /etc/redhat-release ]; then
-    OS="RedHat"
-  elif [ -f /etc/kylin-release ]; then
-    OS="kylin"
-  else
-    echo "Unknow linux distribution."
-  fi
-  OS_ARCH=$(uname -a)
-  if [[ "$OS_ARCH" =~ "x86" ]]
-  then
-    ARCH="x86"
-    echo -e  "The operating system is $OS,the architecture is X86."
-  elif [[ "$OS_ARCH" =~ "aarch" ]]
-  then
-    ARCH="arm64"
-    echo -e  "The operating system is $OS,the architecture is Arm."
   fi
 }
 
@@ -207,7 +196,7 @@ function install_docker_slave() {
   echo -e "\nInstalled docker for other nodes."
 }
 
-check_arch
+get_arch_package
 check_docker
 check_docker_compose
 pull_ansible_image
