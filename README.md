@@ -42,6 +42,12 @@ redis_master
 redis_slave1
 redis_slave2
 ```
+## Modify the setup.sh 
+
+```sh
+vim setup.sh
+ssh_pass="sulibao"         #Change the value to the root user password for the server device
+```
 
 # 4.Installation
 
