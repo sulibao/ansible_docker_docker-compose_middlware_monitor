@@ -41,6 +41,15 @@
     - "arm64/docker-27.2.0.tgz"
   when: "ansible_architecture == 'aarch64'"
 
+#- name: copy file
+#  copy:
+#    src: "{{ item }}/*"
+#    dest: /usr/bin
+#    remote_src: false
+#  with_items:
+#    - "x86/docker"
+#  when: "ansible_architecture == 'x86_64'"
+
 - name: template file
   template:
     src: "{{ item }}"

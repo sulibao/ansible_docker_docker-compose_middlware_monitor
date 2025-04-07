@@ -90,11 +90,12 @@ function install_docker() {
   echo "Installing docker."
   if [[ "$ARCH" == "x86" ]]
   then
-    export DOCKER_OFFLINE_PACKAGE=$path/packages/docker/x86/docker-27.2.0.tgz
+    export DOCKER_OFFLINE_PACKAGE=$path/packages/docker/x86/docker
   else
-    export DOCKER_OFFLINE_PACKAGE=$path/packages/docker/arm64/docker-27.2.0.tgz
+    export DOCKER_OFFLINE_PACKAGE=$path/packages/docker/arm64/docker
   fi
-  tar axvf $DOCKER_OFFLINE_PACKAGE -C /usr/bin/ --strip-components=1
+  #tar axvf $DOCKER_OFFLINE_PACKAGE -C /usr/bin/ --strip-components=1
+  cp -v -f $DOCKER_OFFLINE_PACKAGE/* /usr/bin
   cp -v -f $path/packages/docker/docker.service /usr/lib/systemd/system/
   test -d /etc/docker || mkdir -p /etc/docker
   envsubst '$docker_data' < $path/packages/docker/daemon.json > /etc/docker/daemon.json
@@ -154,16 +155,16 @@ function run_ansible() {
   echo -e "Installing Ansible container."
   if [[ "$ARCH" == "x86" ]]
   then
-    docker run --name ansible_sulibao --network="host" --workdir=$path -d -e LANG=C.UTF-8 -e ssh_password=$ssh_pass --restart=always -v /etc/localtime:/etc/localtime:ro -v ~/.ssh:/root/.ssh -v $path:$path -v "$capath":"$capath" ansible:latest sleep 31536000
+    docker run --name ansible_sulibao --network="host" --workdir=$path -d -e LANG=C.UTF-8 -e ssh_password=$ssh_pass --restart=always -v /etc/localtime:/etc/localtime:ro -v ~/.ssh:/root/.ssh -v $path:$path -v "$capath":"$capath" "$ansible_image_url_x86" sleep 31536000
   else
-    docker run --name ansible_sulibao --network="host" --workdir=$path -d -e LANG=C.UTF-8 -e ssh_password=$ssh_pass --restart=always -v /etc/localtime:/etc/localtime:ro -v ~/.ssh:/root/.ssh -v $path:$path -v "$capath":"$capath" ansible-arm:latest sleep 31536000
+    docker run --name ansible_sulibao --network="host" --workdir=$path -d -e LANG=C.UTF-8 -e ssh_password=$ssh_pass --restart=always -v /etc/localtime:/etc/localtime:ro -v ~/.ssh:/root/.ssh -v $path:$path -v "$capath":"$capath" "$ansible_image_url_arm" sleep 31536000
   fi
   echo -e "Installed Ansible container."
 }
 
 function  create_ssh_key(){
   echo -e "Creating sshkey."
-  docker exec -i ansible_sulibao /bin/sh -c 'echo -e "y\n"|ssh-keygen -t rsa -N "" -C "deploy@redis_sentinel" -f ~/.ssh/id_rsa_ansible_redis -q'
+  docker exec -i ansible_sulibao /bin/sh -c 'echo -e "y\n"|ssh-keygen -t rsa -N "" -C "deploy@ansible" -f ~/.ssh/id_rsa_ansible -q'
   echo -e "\nCreated sshkey."
 
 }
@@ -175,22 +176,16 @@ function copy_ssh_key() {
 }
 
 function install_docker_slave() {
-  echo -e "Installing docker for slave nodes."
+  echo -e "Installing docker for other nodes."
   docker exec -i ansible_sulibao /bin/sh -c "cd $path && ansible-playbook  ./docker.yml"
-  echo -e "\nInstalled docker for slave nodes."
-}
-
-function install_redis() {
-  echo -e "Install redis."
-  docker exec -i ansible_sulibao /bin/sh -c "cd $path && ansible-playbook  ./redis.yml"
-  echo -e "\nInstalled redis."
+  echo -e "\nInstalled docker for other nodes."
 }
 
 check_arch
-check_docker
-check_docker_compose
-load_ansible_image
-ensure_ansible
-create_ssh_key
-copy_ssh_key
+#check_docker
+#check_docker_compose
+#pull_ansible_image
+#ensure_ansible
+#create_ssh_key
+#copy_ssh_key
 install_docker_slave
