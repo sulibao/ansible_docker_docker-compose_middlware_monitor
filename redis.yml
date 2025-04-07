@@ -1,0 +1,34 @@
+- name: config for sysctl.conf
+  hosts: redis
+  tasks:
+  - include_role:
+      name: redis
+      task: sysctls_from
+
+- name: pull image for redis
+  hosts: redis
+  tasks:
+  - include_role:
+      name: redis
+      task: pull_image
+
+- name: docker-compose install redis-master
+  hosts: redis_master
+  tasks:
+  - include_role:
+      name: redis
+      tasks_from: master
+
+- name: docker-compose install redis-slave1
+  hosts: redis_slave1
+  tasks:
+  - include_role:
+      name: redis
+      tasks_from: slave1
+
+- name: docker-compose install redis-slave2
+  hosts: redis_slave2
+  tasks:
+  - include_role:
+      name: redis
+      tasks_from: slave2

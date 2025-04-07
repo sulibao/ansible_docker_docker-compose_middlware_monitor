@@ -92,15 +92,3 @@ Warning: Using a password with '-a' or '-u' option on the command line interface
       2) "6379"
       3) "87291"
 ```
-
-# 6.redis image involved (X86 version, Baidu Net Disk)
-
-```sh
-docker load -i redis-727-x86.tgz
-```
-
-redis:7.2.7 image file：
-
-Links: https://pan.baidu.com/s/1D4xQkrSU4opm-9RVhk6Gmg?pwd=aiw3 
-
-Extraction code: aiw3

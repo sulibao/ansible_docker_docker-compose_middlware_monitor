@@ -5,6 +5,8 @@ export path=`pwd`
 export capath="/opt/.certs"
 export docker_data=$(awk -F': ' '/docker_data_dir:/ {print $2}' group_vars/all.yml)
 export ansible_log_dir="$path/log"
+export ansible_image_url_x86="registry.cn-chengdu.aliyuncs.com/su03/ansible:latest"
+export ansible_image_url_arm="registry.cn-chengdu.aliyuncs.com/su03/ansible-arm:latest"
 ssh_pass="sulibao"
 
 os_arch=$(uname -m)
@@ -127,14 +129,14 @@ function install_docker_compose {
   fi
 }
 
-function load_ansible_image() {
+function pull_ansible_image() {
   if [[ "$ARCH" == "x86" ]]
   then
-    docker load -i $path/packages/ansible/x86/ansible_images.tgz
+    docker pull $ansible_image_url_x86
   else
-    docker load -i $path/packages/ansible/arm64/ansible_images.tgz
+    docker pull $ansible_image_url_arm
   fi
-  echo -e "Loaded ansible image."
+  echo -e "Pulled ansible image."
 }
 
 function ensure_ansible() {
@@ -176,6 +178,12 @@ function install_docker_slave() {
   echo -e "Installing docker for slave nodes."
   docker exec -i ansible_sulibao /bin/sh -c "cd $path && ansible-playbook  ./docker.yml"
   echo -e "\nInstalled docker for slave nodes."
+}
+
+function install_redis() {
+  echo -e "Install redis."
+  docker exec -i ansible_sulibao /bin/sh -c "cd $path && ansible-playbook  ./redis.yml"
+  echo -e "\nInstalled redis."
 }
 
 check_arch

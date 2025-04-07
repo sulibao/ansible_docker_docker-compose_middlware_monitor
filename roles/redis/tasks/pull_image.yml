@@ -1,0 +1,2 @@
+- name: pull image for redis all nodes 
+  shell: "docker pull {{ image_redis }}"
