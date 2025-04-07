@@ -1,4 +1,4 @@
-# ansible_redis_sentinel
+# ansible+docker+docker-compose
 This documentation is for quickly deploying multiple docker+docker-compose environments via ansible containers
 
 # 1.Before installation
