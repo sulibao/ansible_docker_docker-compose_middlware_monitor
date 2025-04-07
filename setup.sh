@@ -132,9 +132,9 @@ function install_docker_compose {
 function pull_ansible_image() {
   if [[ "$ARCH" == "x86" ]]
   then
-    docker pull $ansible_image_url_x86
+    docker pull "$ansible_image_url_x86"
   else
-    docker pull $ansible_image_url_arm
+    docker pull "$ansible_image_url_arm"
   fi
   echo -e "Pulled ansible image."
 }
