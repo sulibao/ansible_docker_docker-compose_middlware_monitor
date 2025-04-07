@@ -7,6 +7,8 @@ export docker_data=$(awk -F': ' '/docker_data_dir:/ {print $2}' group_vars/all.y
 export ansible_log_dir="$path/log"
 export ansible_image_url_x86="registry.cn-chengdu.aliyuncs.com/su03/ansible:latest"
 export ansible_image_url_arm="registry.cn-chengdu.aliyuncs.com/su03/ansible-arm:latest"
+export docker_package_url_x86="https://su-package.oss-cn-chengdu.aliyuncs.com/docker/amd/docker-27.2.0.tgz"
+export docker_package_url_arm="https://su-package.oss-cn-chengdu.aliyuncs.com/docker/arm/docker-27.2.0.tgz"
 ssh_pass="sulibao"
 
 os_arch=$(uname -m)
@@ -90,12 +92,13 @@ function install_docker() {
   echo "Installing docker."
   if [[ "$ARCH" == "x86" ]]
   then
-    export DOCKER_OFFLINE_PACKAGE=$path/packages/docker/x86/docker
+    curl -C - -o $path/packages/docker/x86/docker-27.2.0.tgz $docker_package_url_x86
+    cp -v -f $path/packages/docker/x86/docker-27.2.0.tgz $path/roles/docker/files/x86/docker-27.2.0.tgz
   else
-    export DOCKER_OFFLINE_PACKAGE=$path/packages/docker/arm64/docker
+    curl -C - -o $path/packages/docker/arm64/docker-27.2.0.tgz $docker_package_url_arm
+    cp -v -f $path/packages/docker/arm64/docker-27.2.0.tgz $path/roles/docker/files/arm64/docker-27.2.0.tgz
   fi
-  #tar axvf $DOCKER_OFFLINE_PACKAGE -C /usr/bin/ --strip-components=1
-  cp -v -f $DOCKER_OFFLINE_PACKAGE/* /usr/bin
+  tar axvf $DOCKER_OFFLINE_PACKAGE -C /usr/bin/ --strip-components=1
   cp -v -f $path/packages/docker/docker.service /usr/lib/systemd/system/
   test -d /etc/docker || mkdir -p /etc/docker
   envsubst '$docker_data' < $path/packages/docker/daemon.json > /etc/docker/daemon.json
