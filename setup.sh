@@ -11,8 +11,6 @@ export docker_package_url_x86="https://sulibao.oss-cn-chengdu.aliyuncs.com/docke
 export docker_package_url_arm="https://sulibao.oss-cn-chengdu.aliyuncs.com/docker/arm/docker-27.2.0.tgz"
 export target_file_x86="$path/packages/docker/x86/docker-27.2.0.tgz"
 export target_file_arm="$path/packages/docker/arm/docker-27.2.0.tgz"
-export target_docker_filedir_x86="$path/roles/docker/files/x86/docker-27.2.0.tgz"
-export target_docker_filedir_arm="$path/roles/docker/files/arm/docker-27.2.0.tgz"
 export ssh_pass="sulibao"
 export os_arch=$(uname -m)
 
@@ -32,7 +30,6 @@ function get_arch_package() {
       echo "The file $target_file_x86 already exists, skip download."
     else
       mkdir -p "$(dirname "$target_file_x86")" && \
-      mkdir -p "$(dirname "$target_docker_filedir_x86")"
       curl -C - -o "$target_file_x86" "$docker_package_url_x86"
       if [ $? -eq 0 ]; then
         echo "The file downloaded successfully."
@@ -48,7 +45,6 @@ function get_arch_package() {
       echo "The file $target_file_arm already exists, skip download."
     else
       mkdir -p "$(dirname "$target_file_arm")" && \
-      mkdir -p "$(dirname "$target_docker_filedir_arm")"
       curl -C - -o "$target_file_arm" "$docker_package_url_arm"
       if [ $? -eq 0 ]; then
         echo "The file downloaded successfully."
@@ -108,11 +104,9 @@ function install_docker() {
   echo "Installing docker."
   if [[ "$ARCH" == "x86" ]]
   then
-    export DOCKER_OFFLINE_PACKAGE=$target_file_x86 && \
-    cp -v -f $target_file_x86 $target_docker_filedir_x86
+    export DOCKER_OFFLINE_PACKAGE=$target_file_x86
   else
-    export DOCKER_OFFLINE_PACKAGE=$target_file_arm && \
-    cp -v -f $target_file_arm $target_docker_filedir_arm
+    export DOCKER_OFFLINE_PACKAGE=$target_file_arm
   fi
   tar axvf $DOCKER_OFFLINE_PACKAGE -C /usr/bin/ --strip-components=1
   cp -v -f $path/packages/docker/docker.service /usr/lib/systemd/system/
@@ -192,14 +186,26 @@ function  create_ssh_key(){
 
 function copy_ssh_key() {
   echo -e "Copying sshkey."
-  docker exec -i ansible_sulibao /bin/sh -c "cd $path && ansible-playbook  ssh-access.yml -e ansible_ssh_pass=$ssh_pass"  
+  docker exec -i ansible_sulibao /bin/sh -c "cd $path && ansible-playbook ssh-access.yml -e ansible_ssh_pass=$ssh_pass"  
   echo -e "\nCopied sshkey."
 }
 
-function install_docker_slave() {
-  echo -e "Installing docker for other nodes."
-  docker exec -i ansible_sulibao /bin/sh -c "cd $path && ansible-playbook  ./docker.yml"
-  echo -e "\nInstalled docker for other nodes."
+function install_keepalived() {
+  echo -e "Installing keepalived."
+  docker exec -i ansible_sulibao /bin/sh -c "cd $path && ansible-playbook keepalived.yml -e ansible_ssh_pass=$ssh_pass"
+  echo -e "\nInstalled keepalived."
+}
+
+function install_nfs() {
+  echo -e "Installing nfs."
+  docker exec -i ansible_sulibao /bin/sh -c "cd $path && ansible-playbook nfs.yml -e ansible_ssh_pass=$ssh_pass"
+  echo -e "\nInstalled nfs."
+}
+
+function install_httpd() {
+  echo -e "Installing httpd."
+  docker exec -i ansible_sulibao /bin/sh -c "cd $path && ansible-playbook httpd.yml -e ansible_ssh_pass=$ssh_pass"
+  echo -e "\nInstalled httpd."
 }
 
 get_arch_package
@@ -209,4 +215,6 @@ pull_ansible_image
 ensure_ansible
 create_ssh_key
 copy_ssh_key
-install_docker_slave
+install_keepalived
+install_nfs
+install_httpd

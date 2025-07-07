@@ -1,0 +1,13 @@
+- name: install packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - openssl-devel
+    - net-tools
+    - ipvsadm
+
+- name: close firewalld
+  service:
+    name: firewalld
+    state: stopped

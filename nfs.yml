@@ -1,0 +1,9 @@
+- name: Install nfs-server
+  hosts: nfs_server
+  roles:
+    - nfs/server
+
+- name: Install nfs-utils for webs
+  hosts: web_cluster
+  roles:
+    - nfs/client

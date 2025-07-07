@@ -1,0 +1,4 @@
+{% for host in groups['web_cluster'] %}
+{{ nfs_share_dir }} {{ host }}(rw,async,insecure,fsid=0,no_auth_nlm,no_subtree_check,no_root_squash,no_all_squash)
+{{ nfs_share_dir }} {{ host }}(rw,sync,insecure,fsid=0,no_auth_nlm,no_subtree_check,no_root_squash,no_all_squash)
+{% endfor %}i

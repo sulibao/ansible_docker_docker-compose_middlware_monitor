@@ -1,0 +1,26 @@
+- name: Remove nfs-utils
+  yum:
+    name: ["nfs-utils"]
+    state: absent
+
+- name: Install nfs-utils
+  yum:
+    name: ["nfs-utils"]
+    state: installed
+
+- name: Loading sunrpc module
+  command: /usr/sbin/modprobe sunrpc
+  ignore_errors: True
+
+- name: config sunrpc.tcp_slot_table_entries
+  lineinfile:
+    path: /etc/sysctl.conf
+    regexp: '^sunrpc\.tcp_slot_table_entries\s*='
+    line: 'sunrpc.tcp_slot_table_entries = 128'
+    create: yes
+  register: sysctl_config
+
+- name: flush sysctl
+  command: sysctl -p
+  when: sysctl_config.changed
+  ignore_errors: true

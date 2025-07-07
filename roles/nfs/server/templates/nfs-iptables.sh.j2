@@ -1,0 +1,26 @@
+#!/bin/bash
+
+echo $1
+if [ "$1" = "start" ]; then
+
+  {% for host in groups['web_cluster'] %}
+  iptables -A INPUT -p tcp -s {{ host }} --dport 111 -j ACCEPT
+  iptables -A INPUT -p udp -s {{ host }} --dport 111 -j ACCEPT
+  {% endfor %}
+  iptables -A INPUT -p tcp --dport 111 -j DROP
+  iptables -A INPUT -p udp --dport 111 -j DROP
+
+fi
+
+if [ "$1" = "stop" ]; then
+
+  iptables -D INPUT -p tcp --dport 111 -j DROP
+  iptables -D INPUT -p udp --dport 111 -j DROP
+  {% for host in groups['web_cluster'] %}
+  iptables -D INPUT -p tcp -s {{ host }} --dport 111 -j ACCEPT
+  iptables -D INPUT -p udp -s {{ host }} --dport 111 -j ACCEPT
+  {% endfor %}
+
+fi
+
+exit 0

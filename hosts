@@ -1,15 +1,24 @@
-[ansible]   
+[keepalived_master]   
 192.168.2.190
-[other_node01]  
+[keepalived_slave]  
 192.168.2.191
-[other_node02] 
+[keealived_web01]
 192.168.2.192
+[keealived_web02]
+192.168.2.193
+[nfs_server]
+192.168.2.190
 
-[other_nodes:children]
-other_node01
-other_node02
+[keepalived_cluster:children]
+keepalived_master
+keepalived_slave
 
-[ansible_cluster:children]
-ansible
-other_node01
-other_node02
+[web_cluster:children]
+keealived_web01
+keealived_web02
+
+[all_nodes:children]
+keepalived_master
+keepalived_slave
+keealived_web01
+keealived_web02

@@ -1,0 +1,68 @@
+- name: Remove nfs-utils
+  yum:
+    name: ["nfs-utils"]
+    state: absent
+
+- name: Install nfs-utils
+  yum:
+    name: ["nfs-utils"]
+    state: present
+  notify: restart nfs-server
+  ignore_errors: yes
+
+- name: Rebuild initramfs boot
+  command: dracut -v -f
+  when:  nfs_ipv6_disabled | bool
+
+- name: Ensure NFS share directory
+  file:
+    path: "{{ nfs_share_dir }}"
+    state: directory
+    recurse: yes
+    owner: root
+    group: root
+    mode: 0777
+
+- name: Append NFS exports
+  lineinfile:
+    path: /etc/exports
+    regexp: '^{{ nfs_share_dir }}\s+{{ item }}$.*$'
+    line: "{{ nfs_share_dir }} {{ item }}(rw,async,insecure,fsid=0,no_auth_nlm,no_subtree_check,no_root_squash,no_all_squash)"
+    create: yes
+    state: present
+  loop: "{{ groups['web_cluster'] }}"
+
+- name: refresh NFS-new_nodes
+  shell: systemctl restart nfs && exportfs -r
+
+- name: Modify nfs server processes
+  lineinfile:
+    path: /etc/sysconfig/nfs
+    regexp: '^(.*)RPCNFSDCOUNT=(.*)$'
+    line: 'RPCNFSDCOUNT=16'
+    backrefs: yes
+  notify: restart nfs-server
+  ignore_errors: true
+
+- name: copy nfs-iptables.sh
+  template:
+    src: nfs-iptables.sh.j2
+    dest: /usr/local/bin/nfs-iptables.sh
+    mode: 0755
+
+- name: copy nfs-iptables.service
+  copy:
+    src: nfs-iptables.service
+    dest: /etc/systemd/system/nfs-iptables.service
+    mode: 0644
+
+- name: start nfs-iptables
+  service:
+    name: nfs-iptables
+    enabled: yes
+    state: started
+
+- name: init easy index.html
+  copy:
+    src: index.html
+    dest: "{{ nfs_share_dir }}"

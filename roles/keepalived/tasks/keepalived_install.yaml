@@ -1,0 +1,45 @@
+- name: Install the packages needed for compilation
+  become: true
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - gcc
+    - gcc-c++
+    - make
+    - openssl-devel
+    - libnl-devel
+  ignore_errors: yes
+
+- name: unarchive keepalived offline package
+  unarchive:
+    src: files/keepalived-2.2.8.tar.gz
+    dest: /usr/local/src/
+
+- name: install keepalived
+  shell: |
+    ./configure --prefix=/usr/local/keepalived --sysconfdir=/etc --sbindir=/usr/sbin --bindir=/usr/bin
+    make
+    make install
+  args:
+    chdir: /usr/local/src/keepalived-2.2.8
+    creates: /usr/sbin/keepalived
+  become: true
+
+- name: add sysctl config
+  lineinfile:
+    path: /etc/sysctl.conf
+    regexp: '^{{ item.regexp }}\s*='
+    line: '{{ item.line }}'
+    create: yes
+    state: present
+  loop:
+    - { regexp: 'net.ipv4.conf.all.send_redirects', line: 'net.ipv4.conf.all.send_redirects = 0' }
+    - { regexp: 'net.ipv4.conf.default.send_redirects', line: 'net.ipv4.conf.default.send_redirects = 0' }
+    - { regexp: 'net.ipv4.conf.ens33.send_redirects', line: 'net.ipv4.conf.ens33.send_redirects = 0' }
+  register: sysctl_config
+
+- name: flush sysctl
+  command: sysctl -p
+  when: sysctl_config.changed
+  ignore_errors: true

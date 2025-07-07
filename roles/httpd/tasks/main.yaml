@@ -1,0 +1,25 @@
+- name: install httpd
+  yum:
+    name: httpd
+    state: present
+
+- name: umount /var/www/html
+  shell: "umount /var/www/html"
+  ignore_errors: yes
+  
+- name: mount dir for httpd
+  ansible.builtin.mount:
+    path: /var/www/html
+    src: "192.168.2.190:{{ nfs_share_dir }}"
+    fstype: nfs
+    opts: defaults,rw
+    state: mounted
+  become: true
+  async: 30
+  poll: 5
+
+- name: start httpd
+  service:
+    name: httpd
+    state: started
+    enabled: yes

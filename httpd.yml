@@ -1,0 +1,4 @@
+- name: Install httpd
+  hosts: web_cluster
+  roles:
+    - httpd

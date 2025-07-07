@@ -1,0 +1,34 @@
+- name: config before install keepalived
+  hosts: all_nodes
+  tasks:
+  - include_role:
+      name: keepalived
+      tasks_from: packages_firewalld
+
+- name: install keepalived for all nodes
+  hosts: keepalived_cluster
+  tasks:
+  - include_role:
+      name: keepalived
+      tasks_from: keepalived_install
+
+- name: config master keepalived and start
+  hosts: keepalived_master
+  tasks:
+  - include_role:
+      name: keepalived
+      tasks_from: master
+
+- name: config slave keepalived and start
+  hosts: keepalived_slave
+  tasks:
+  - include_role:
+      name: keepalived
+      tasks_from: slave
+
+- name: add route to vip
+  hosts: web_cluster
+  tasks:
+  - include_role:
+      name: keepalived
+      tasks_from: add_vip 

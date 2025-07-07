@@ -1,0 +1,37 @@
+- name: add sysctl config
+  lineinfile:
+    path: /etc/sysctl.conf
+    regexp: '^{{ item.regexp }}\s*='
+    line: '{{ item.line }}'
+    create: yes
+    state: present
+  loop:
+    - { regexp: 'net.ipv4.conf.all.arp_ignore', line: 'net.ipv4.conf.all.arp_ignore = 1' }
+    - { regexp: 'net.ipv4.conf.all.arp_announce', line: 'net.ipv4.conf.all.arp_announce = 2' }
+    - { regexp: 'net.ipv4.conf.default.arp_ignore', line: 'net.ipv4.conf.default.arp_ignore = 1' }
+    - { regexp: 'net.ipv4.conf.default.arp_announce', line: 'net.ipv4.conf.default.arp_announce = 2' }
+    - { regexp: 'net.ipv4.conf.lo.arp_ignore', line: 'net.ipv4.conf.lo.arp_ignore = 1' }
+    - { regexp: 'net.ipv4.conf.lo.arp_announce', line: 'net.ipv4.conf.lo.arp_announce = 2' }
+  register: sysctl_config
+
+- name: flush sysctl
+  command: sysctl -p
+  when: sysctl_config.changed
+  ignore_errors: true
+
+- name: stop old lo:100 connection
+  shell: "ifdown lo:100"  
+  ignore_errors: true
+
+- name: copy netdevice to dir
+  template:
+    src: lo.j2
+    dest: /etc/sysconfig/network-scripts/ifcfg-lo:100
+    mode: 0644
+  become: true
+
+- name: start lo:100 connection
+  shell: "ifup lo:100"
+
+- name: add route
+  shell: "route add -host {{ keepalived_vip }} dev lo:100" 

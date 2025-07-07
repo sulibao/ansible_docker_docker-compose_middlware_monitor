@@ -1,0 +1,12 @@
+[Unit]
+Description=NFS iptables rules
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/nfs-iptables.sh start
+ExecStop=/usr/local/bin/nfs-iptables.sh stop
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

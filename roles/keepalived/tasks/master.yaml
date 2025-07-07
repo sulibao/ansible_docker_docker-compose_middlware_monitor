@@ -1,0 +1,10 @@
+- name: template master conf to dir
+  template:
+    src: keepalived_master.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+
+- name: start master keepalived
+  service:
+    name: keepalived
+    state: started
+    enabled: yes
