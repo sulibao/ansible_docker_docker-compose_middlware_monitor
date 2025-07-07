@@ -7,12 +7,12 @@ export docker_data=$(awk -F': ' '/docker_data_dir:/ {print $2}' group_vars/all.y
 export ansible_log_dir="$path/log"
 export ansible_image_url_x86="registry.cn-chengdu.aliyuncs.com/su03/ansible:latest"
 export ansible_image_url_arm="registry.cn-chengdu.aliyuncs.com/su03/ansible-arm:latest"
-export docker_package_url_x86="https://sulibao.oss-cn-chengdu.aliyuncs.com/docker/amd/docker-27.2.0.tgz"
-export docker_package_url_arm="https://sulibao.oss-cn-chengdu.aliyuncs.com/docker/arm/docker-27.2.0.tgz"
+export docker_package_url_x86="https://su-package.oss-cn-chengdu.aliyuncs.com/docker/amd/docker-27.2.0.tgz"
+export docker_package_url_arm="https://su-package.oss-cn-chengdu.aliyuncs.com/docker/arm64/docker-27.2.0.tgz"
 export target_file_x86="$path/packages/docker/x86/docker-27.2.0.tgz"
-export target_file_arm="$path/packages/docker/arm/docker-27.2.0.tgz"
+export target_file_arm="$path/packages/docker/arm64/docker-27.2.0.tgz"
 export target_docker_filedir_x86="$path/roles/docker/files/x86/docker-27.2.0.tgz"
-export target_docker_filedir_arm="$path/roles/docker/files/arm/docker-27.2.0.tgz"
+export target_docker_filedir_arm="$path/roles/docker/files/arm64/docker-27.2.0.tgz"
 export ssh_pass="sulibao"
 export os_arch=$(uname -m)
 
@@ -145,7 +145,7 @@ function install_docker_compose {
     cp -v -f $DOCKER_COMPOSE_OFFLINE_PACKAGE /usr/local/bin/docker-compose && \
     chmod 0755 /usr/local/bin/docker-compose
   else
-    export DOCKER_COMPOSE_OFFLINE_PACKAGE=$path/packages/docker-compose/arm/docker-compose-linux-aarch64
+    export DOCKER_COMPOSE_OFFLINE_PACKAGE=$path/packages/docker-compose/arm64/docker-compose-linux-aarch64
     cp -v -f $DOCKER_COMPOSE_OFFLINE_PACKAGE /usr/local/bin/docker-compose && \
     chmod 0755 /usr/local/bin/docker-compose
   fi
@@ -185,7 +185,7 @@ function run_ansible() {
 
 function  create_ssh_key(){
   echo -e "Creating sshkey."
-  docker exec -i ansible_sulibao /bin/sh -c 'echo -e "y\n"|ssh-keygen -t rsa -N "" -C "deploy@ansible" -f ~/.ssh/id_rsa_ansible -q'
+  docker exec -i ansible_sulibao /bin/sh -c 'echo -e "y\n"|ssh-keygen -t rsa -N "" -C "deploy@ansible_redis_sentinel" -f ~/.ssh/id_rsa_ansible_redis -q'
   echo -e "\nCreated sshkey."
 
 }
@@ -202,6 +202,12 @@ function install_docker_slave() {
   echo -e "\nInstalled docker for other nodes."
 }
 
+function install_redis() {
+  echo -e "Install redis."
+  docker exec -i ansible_sulibao /bin/sh -c "cd $path && ansible-playbook  ./redis.yml"
+  echo -e "\nInstalled redis."
+}
+
 get_arch_package
 check_docker
 check_docker_compose
@@ -210,3 +216,4 @@ ensure_ansible
 create_ssh_key
 copy_ssh_key
 install_docker_slave
+install_redis
