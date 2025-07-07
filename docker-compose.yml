@@ -1,0 +1,68 @@
+version: '3'
+
+services:
+  prometheus:
+    image: registry.cn-chengdu.aliyuncs.com/su03/prometheus:2.46.0-debian-11-r5
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./rules.yml:/etc/prometheus/rules.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    restart: always
+
+  alertmanager:
+    image: registry.cn-chengdu.aliyuncs.com/su03/alertmanager:0.25.0-debian-11-r171
+    container_name: alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+    restart: always
+
+  grafana:
+    image: registry.cn-chengdu.aliyuncs.com/su03/grafana:9.3.6
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./config/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./config/default-provider.yaml:/etc/grafana/provisioning/dashboards/default-provider.yaml
+      - ./dashboards:/etc/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    restart: always
+
+  pushgateway:
+    image: registry.cn-chengdu.aliyuncs.com/su03/pushgateway:v1.6.2 
+    container_name: pushgateway
+    ports:
+      - "9091:9091"
+    restart: always
+
+  blackbox-exporter:
+    image: registry.cn-chengdu.aliyuncs.com/su03/blackbox-exporter:0.25.0
+    container_name: blackbox-exporter
+    ports:
+      - "9115:9115"
+    volumes:
+      - ./blackbox.yml:/etc/blackbox_exporter/config.yml
+    command:
+      - '--config.file=/etc/blackbox_exporter/config.yml'
+    restart: always
+
+  node-exporter:
+    image: registry.cn-chengdu.aliyuncs.com/su03/node-exporter:1.6.1-debian-11-r8
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    restart: always
+
+volumes:
+  grafana_data:    

@@ -1,0 +1,19 @@
+global:
+  resolve_timeout: 5m
+  smtp_smarthost: 'smtp.qq.com:465'   #Mail server address, need to connect to the port
+  smtp_from: 'xxx'                #Email address
+  smtp_auth_username: 'xxx'       #Email authentication user address, usually the same as smtp_from
+  smtp_auth_password: 'xxx'       #Email authorization code
+  smtp_require_tls: false
+ 
+route:
+  group_by: ['alertname']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 12h
+  receiver: 'test-alertmanager'
+ 
+receivers:
+- name: 'test-alertmanager'
+  email_configs:
+  - to: 'xxx'               #Alert receiving email address

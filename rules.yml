@@ -1,0 +1,11 @@
+groups:
+  - name: test-rules
+    rules:
+      - alert: HighCPUUsage
+        expr: avg by (instance) (rate(node_cpu_seconds_total{mode!="idle"}[5m])) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "{{ $labels.instance }} has a CPU usage of {{ $value }}"
