@@ -1,1 +1,7 @@
 docker_data_dir: /app/docker_data
+minio_data: /app/minio_data
+minio_port: 9000
+minio_console_port: 9001
+image_minio: "registry.cn-chengdu.aliyuncs.com/su03/minio:RELEASE.2024-05-28T17-19-04Z"
+minio_ak: "admin"
+minio_sk: "admin@2025

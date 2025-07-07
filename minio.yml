@@ -1,0 +1,13 @@
+- name: config for hosts
+  hosts: minio
+  tasks:
+  - include_role:
+      name: minio
+      tasks_from: hosts
+
+- name: docker-compose install minio
+  hosts: minio
+  tasks:
+  - include_role:
+      name: minio
+      tasks_from: minio

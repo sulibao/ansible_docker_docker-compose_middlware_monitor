@@ -1,0 +1,18 @@
+- name: ensure dir for minio
+  file:
+    path: "{{ minio_data }}"
+    state: directory
+    mode: "0755"
+
+- name: template file
+  template:
+    src: "{{ item }}"
+    dest: "{{ minio_data }}/{{ item | splitext | first }}"
+    mode: "0755"
+  with_items:
+    - docker-compose.yml.j2
+
+- name: install minio
+  shell: "docker-compose -f docker-compose.yml up -d"
+  args:
+    chdir: "{{ minio_data }}"

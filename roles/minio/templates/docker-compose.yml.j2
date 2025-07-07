@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  minio:
+    image: {{ image_minio }}
+    command: server --console-address ":{{ minio_console_port }}" http://test{1...4}:{{ minio_port }}/mnt/data
+    restart: always
+    environment:
+      MINIO_ROOT_USER: {{ minio_ak }}
+      MINIO_ROOT_PASSWORD: {{ minio_sk }}
+    volumes:
+      - {{ minio_data }}:/mnt/data
+    network_mode: host
