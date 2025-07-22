@@ -50,38 +50,27 @@ receivers:
 
 配置了监视、警报等
 
-## 6.数据源和数据面板初始化配置
+## 6.修改变量文件.env
 
-```yaml
-#数据源在config文件夹中配置
-(1)datasources.yaml
-apiVersion: 1
-deleteDatasources:
-  - name: Prometheus
-    orgId: 1
-datasources:
-  - name: Prometheus
-    type: prometheus
-    access: proxy
-    orgId: 1
-    uid: prometheus
-    url: http://192.168.2.193:9090   #这里的地址是你的prometheus服务的地址
-    isDefault: true
-(2)default-provider.yaml
-apiVersion: 1
-providers:
-- name: 'default-provider'
-  orgId: 1
-  folder: dashboards
-  folderUid: ''
-  type: file
-  disableDeletion: false
-  editable: true
-  updateIntervalSeconds: 10
-  options:
-    path: /etc/grafana/dashboards     
-    #在这里指定从容器中读取dashboards文件的路径，该文件可以在docker-compose中的grafana挂载中找到yaml文件
-    foldersFromFilesStructure: true
+```bash
+#promethues镜像和版本
+prometheus_image="registry.cn-chengdu.aliyuncs.com/su03/prometheus:2.46.0-debian-11-r5"
+#alertmanager镜像和版本
+alertmanager_image="registry.cn-chengdu.aliyuncs.com/su03/alertmanager:0.25.0-debian-11-r171"
+#grafana镜像和版本
+grafana_image="registry.cn-chengdu.aliyuncs.com/su03/grafana:9.3.6"
+#grafana登录用户
+grafana_user="admin"
+#grafana登录密码
+grafana_password="admin"
+#pushgateway镜像和版本
+pushgateway_image="registry.cn-chengdu.aliyuncs.com/su03/pushgateway:v1.6.2"
+#blackbox_exporter镜像和版本
+blackbox_image="registry.cn-chengdu.aliyuncs.com/su03/blackbox-exporter:0.25.0"
+#node_exporter镜像和版本
+nodeexporter_image="registry.cn-chengdu.aliyuncs.com/su03/node-exporter:1.6.1-debian-11-r8"
+#prometheus数据源地址，此行主要影响到./config/datasources.yaml中datasources.url的值
+prometheus_url="http://8.137.21.201:9090"
 
 #仪表板文件配置两个初始节点监视器面板
 disk.json：Server disk usage is shown
@@ -93,7 +82,7 @@ node-exporter-grafana.json：Server disk, io, cpu usage is displayed
 ```sh
 prometheus：http://IP:3000
 
-grafana：http://IP:9090
+grafana：http://IP:9090,使用`.env`文件中定义的用户和密码进行登录
 
 alertmanager：http://IP:9093
 ```

@@ -2,7 +2,7 @@ version: '3'
 
 services:
   prometheus:
-    image: registry.cn-chengdu.aliyuncs.com/su03/prometheus:2.46.0-debian-11-r5
+    image: ${prometheus_image}
     container_name: prometheus
     ports:
       - "9090:9090"
@@ -14,7 +14,7 @@ services:
     restart: always
 
   alertmanager:
-    image: registry.cn-chengdu.aliyuncs.com/su03/alertmanager:0.25.0-debian-11-r171
+    image: ${alertmanager_image}
     container_name: alertmanager
     ports:
       - "9093:9093"
@@ -25,7 +25,7 @@ services:
     restart: always
 
   grafana:
-    image: registry.cn-chengdu.aliyuncs.com/su03/grafana:9.3.6
+    image: ${grafana_image}
     container_name: grafana
     ports:
       - "3000:3000"
@@ -35,19 +35,20 @@ services:
       - ./config/default-provider.yaml:/etc/grafana/provisioning/dashboards/default-provider.yaml
       - ./dashboards:/etc/grafana/dashboards
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=${grafana_user}
+      - GF_SECURITY_ADMIN_PASSWORD=${grafana_password}
+      - prometheus_url=${prometheus_url}
     restart: always
 
   pushgateway:
-    image: registry.cn-chengdu.aliyuncs.com/su03/pushgateway:v1.6.2 
+    image: ${pushgateway_image} 
     container_name: pushgateway
     ports:
       - "9091:9091"
     restart: always
 
   blackbox-exporter:
-    image: registry.cn-chengdu.aliyuncs.com/su03/blackbox-exporter:0.25.0
+    image: ${blackbox_image}
     container_name: blackbox-exporter
     ports:
       - "9115:9115"
@@ -58,7 +59,7 @@ services:
     restart: always
 
   node-exporter:
-    image: registry.cn-chengdu.aliyuncs.com/su03/node-exporter:1.6.1-debian-11-r8
+    image: ${nodeexporter_image}
     container_name: node-exporter
     ports:
       - "9100:9100"
