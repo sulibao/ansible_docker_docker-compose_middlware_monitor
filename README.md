@@ -71,15 +71,19 @@ blackbox_image="registry.cn-chengdu.aliyuncs.com/su03/blackbox-exporter:0.25.0"
 nodeexporter_image="registry.cn-chengdu.aliyuncs.com/su03/node-exporter:1.6.1-debian-11-r8"
 #prometheus数据源地址，此行主要影响到./config/datasources.yaml中datasources.url的值
 prometheus_url="http://8.137.21.201:9090"
+```
 
-#仪表板文件配置两个初始节点监视器面板
+## 7.面板json文件
+
+```bash
+#仪表板文件配置了两个初始节点监视器面板
 disk.json：Server disk usage is shown
 node-exporter-grafana.json：Server disk, io, cpu usage is displayed
 ```
 
-## 7.访问地址
+## 8.访问地址
 
-```sh
+```bash
 prometheus：http://IP:3000
 
 grafana：http://IP:9090,使用`.env`文件中定义的用户和密码进行登录
