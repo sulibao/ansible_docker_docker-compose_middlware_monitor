@@ -5,8 +5,7 @@ export path=`pwd`
 export capath="/opt/.certs"
 export docker_data=$(awk -F': ' '/docker_data_dir:/ {print $2}' group_vars/all.yml)
 export ansible_log_dir="$path/log"
-export ansible_image_url_x86="registry.cn-chengdu.aliyuncs.com/su03/ansible:latest"
-export ansible_image_url_arm="registry.cn-chengdu.aliyuncs.com/su03/ansible-arm:latest"
+export ansible_image_url="registry.cn-chengdu.aliyuncs.com/su03/ansible:latest"
 export docker_package_url_x86="https://sulibao.oss-cn-chengdu.aliyuncs.com/docker/amd/docker-27.2.0.tgz"
 export docker_package_url_arm="https://sulibao.oss-cn-chengdu.aliyuncs.com/docker/arm/docker-27.2.0.tgz"
 export target_file_x86="$path/packages/docker/x86/docker-27.2.0.tgz"
@@ -146,12 +145,8 @@ function install_docker_compose {
 }
 
 function pull_ansible_image() {
-  if [[ "$ARCH" == "x86" ]]
-  then
-    docker pull "$ansible_image_url_x86"
-  else
-    docker pull "$ansible_image_url_arm"
-  fi
+  echo -e "Pulling ansible image."
+  docker pull "$ansible_image_url"
   echo -e "Pulled ansible image."
 }
 
@@ -168,12 +163,7 @@ function ensure_ansible() {
 
 function run_ansible() {
   echo -e "Installing Ansible container."
-  if [[ "$ARCH" == "x86" ]]
-  then
-    docker run --name ansible_sulibao --network="host" --workdir=$path -d -e LANG=C.UTF-8 -e ssh_password=$ssh_pass --restart=always -v /etc/localtime:/etc/localtime:ro -v ~/.ssh:/root/.ssh -v $path:$path -v "$capath":"$capath" "$ansible_image_url_x86" sleep 31536000
-  else
-    docker run --name ansible_sulibao --network="host" --workdir=$path -d -e LANG=C.UTF-8 -e ssh_password=$ssh_pass --restart=always -v /etc/localtime:/etc/localtime:ro -v ~/.ssh:/root/.ssh -v $path:$path -v "$capath":"$capath" "$ansible_image_url_arm" sleep 31536000
-  fi
+  docker run --name ansible_sulibao --network="host" --workdir=$path -d -e LANG=C.UTF-8 -e ssh_password=$ssh_pass --restart=always -v /etc/localtime:/etc/localtime:ro -v ~/.ssh:/root/.ssh -v $path:$path -v "$capath":"$capath" "$ansible_image_url" sleep 31536000
   echo -e "Installed Ansible container."
 }
 
@@ -181,7 +171,6 @@ function  create_ssh_key(){
   echo -e "Creating sshkey."
   docker exec -i ansible_sulibao /bin/sh -c 'echo -e "y\n"|ssh-keygen -t rsa -N "" -C "deploy@ansible" -f ~/.ssh/id_rsa_ansible -q'
   echo -e "\nCreated sshkey."
-
 }
 
 function copy_ssh_key() {
