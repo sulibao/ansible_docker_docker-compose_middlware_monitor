@@ -150,6 +150,18 @@ function install_docker_compose {
   fi
 }
 
+function install_monitor {
+  echo "Installing monitor with docker-compose."
+  if [ -f ./docker-compose.yml ]; then
+    docker-compose -f docker-compose.yml up -d 
+  else
+    echo "docker-compose.yml file for monitor is not exists, please check the file."
+    exit 1
+  fi
+  echo "Installed monitor system."
+}
+
 get_arch_package
 check_docker
 check_docker_compose
+install_monitor
