@@ -1,9 +1,9 @@
 # ansible+docker+docker-compose
 This document is intended to illustrate the process of quickly deploying multiple Docker + Docker-Compose environments using Ansible containers.
 
-# 1.Before install
+## Before install
 
-## Modify the variables file "./group_vars/all.yml"
+### Modify the variables file "./group_vars/all.yml"
 
 ```yaml
 vim group_vars/all.yml
@@ -12,7 +12,7 @@ docker_data_dir: /app/docker_data
 
 ```
 
-## Modify ansible host list
+### Modify ansible host list
 
 ```yaml
 [ansible]   
@@ -33,7 +33,7 @@ other_node01
 other_node02
 ```
 
-# 2.Install
+## Install
 
 ```sh
 bash setup.sh
