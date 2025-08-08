@@ -2,7 +2,7 @@
 
 本文档说明了如何使用ansible+docker-compose为三台机器快速部署一个单主、双从、三哨兵的redis集群。
 
-# 1.示例服务器列表
+## 示例服务器列表
 
 | IP                     | 用途       |
 | ---------------------- | ---------- |
@@ -10,13 +10,13 @@
 | 192.168.2.191（test2） | 初始slave1 |
 | 192.168.2.192（test3） | 初始slave2 |
 
-# 2.大致架构逻辑
+## 大致架构逻辑
 
 ![](https://i-blog.csdnimg.cn/direct/5046d57775684d5d8a9b6e92e3e6afa6.png)
 
-# 3.安装前
+## 安装前
 
-## 修改变量文件group_vars/all.yml
+### 修改变量文件group_vars/all.yml
 
 ```yaml
 vim group_vars/all.yml
@@ -28,7 +28,7 @@ redis_pass: "sulibao"     #redis认证密码
 image_redis: "registry.cn-chengdu.aliyuncs.com/su03/redis:7.2.7"   #redis和sentinel的镜像
 ```
 
-## 修改主机清单
+### 修改主机清单
 
 ```yaml
 [root@test1 redis_data]# cat hosts 
@@ -49,7 +49,7 @@ redis_slave1
 redis_slave2
 ```
 
-## 修改setup.sh安装脚本
+### 修改setup.sh安装脚本
 
 ```sh
 
@@ -57,13 +57,13 @@ export ssh_pass="sulibao"  #服务器root密码，这里要求三台服务器密
 
 ```
 
-# 4.安装
+## 安装
 
 ```sh
 bash setup.sh
 ```
 
-# 5.验证redis-master故障转移
+## 验证redis-master故障转移
 
 ```sh
 #初始集群信息，test1是主，test2和test3是从

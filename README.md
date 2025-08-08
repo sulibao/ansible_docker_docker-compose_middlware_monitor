@@ -2,7 +2,7 @@
 
 This document explains how to use Ansible and docker-compose to quickly deploy a single-master, dual-slave, and three-sentry Redis cluster on three machines.
 
-# 1.Example server list
+## Example server list
 
 | IP                     | Purpose        |
 | ---------------------- | -------------- |
@@ -10,13 +10,13 @@ This document explains how to use Ansible and docker-compose to quickly deploy a
 | 192.168.2.191（test2） | Initial slave1 |
 | 192.168.2.192（test3） | Initial slave2 |
 
-# 2.General framework logic
+## General framework logic
 
 ![](https://i-blog.csdnimg.cn/direct/5046d57775684d5d8a9b6e92e3e6afa6.png)
 
-# 3.Before install
+## Before install
 
-## Modify variables file "./group_vars/all.yml"
+### Modify variables file "./group_vars/all.yml"
 
 ```yaml
 vim group_vars/all.yml
@@ -32,7 +32,7 @@ redis_pass: "sulibao"
 image_redis: "registry.cn-chengdu.aliyuncs.com/su03/redis:7.2.7"   
 ```
 
-## 修改主机清单
+### Modify host list
 
 ```yaml
 [root@test1 redis_data]# cat hosts 
@@ -56,7 +56,7 @@ redis_slave1
 redis_slave2
 ```
 
-## Modify install file setup.sh 
+### Modify install file setup.sh 
 
 ```sh
 # Server root password. It is required that the passwords for all three servers be the same.
@@ -64,13 +64,13 @@ export ssh_pass="sulibao"
 
 ```
 
-# 4.Install
+## Install
 
 ```sh
 bash setup.sh
 ```
 
-# 5.Verify the failover of the redis-master
+## Verify the failover of the redis-master
 
 ```sh
 # Initial cluster information: test1 is the primary node, while test2 and test3 are secondary nodes.
