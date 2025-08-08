@@ -161,7 +161,11 @@ function install_monitor {
   echo "Installed monitor system."
 }
 
-get_arch_package
-check_docker
-check_docker_compose
-install_monitor
+function main() {
+  get_arch_package
+  check_docker
+  check_docker_compose
+  install_monitor
+}
+
+main
