@@ -192,11 +192,15 @@ function install_docker_slave() {
   echo -e "\nInstalled docker for other nodes."
 }
 
-get_arch_package
-check_docker
-check_docker_compose
-pull_ansible_image
-ensure_ansible
-create_ssh_key
-copy_ssh_key
-install_docker_slave
+function main() {
+  get_arch_package
+  check_docker
+  check_docker_compose
+  pull_ansible_image
+  ensure_ansible
+  create_ssh_key
+  copy_ssh_key
+  install_docker_slave
+}
+
+main

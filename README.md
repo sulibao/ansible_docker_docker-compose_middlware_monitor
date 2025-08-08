@@ -1,22 +1,23 @@
 # ansible+docker+docker-compose
-本文档用于通过ansible容器快速部署多个docker+docker-compose环境。
+This document is intended to illustrate the process of quickly deploying multiple Docker + Docker-Compose environments using Ansible containers.
 
-# 1.安装前
+# 1.Before install
 
-## 修改变量文件group_vars/all.yml
+## Modify the variables file "./group_vars/all.yml"
 
 ```yaml
 vim group_vars/all.yml
- 
-docker_data_dir: /app/docker_data   #docker的数据目录
+# Docker's data directory
+docker_data_dir: /app/docker_data
 
 ```
 
-## 修改ansible主机清单
+## Modify ansible host list
 
 ```yaml
 [ansible]   
-192.168.2.190           #该节点运行ansible容器，它将在其他节点上部署docker+docker-compose
+# This node runs an Ansible container, and it will deploy Docker + Docker Compose on other nodes.
+192.168.2.190
 [other_node01]  
 192.168.2.191
 [other_node02] 
@@ -32,7 +33,7 @@ other_node01
 other_node02
 ```
 
-# 2.安装
+# 2.Install
 
 ```sh
 bash setup.sh
