@@ -9,17 +9,17 @@
 bash setup.sh / bash -x setup.sh
 ```
 
-## 1.setup.sh
+## setup.sh
 
 定义安装docker、docker-compose、monitor system的函数，安装时主要是运行这个文件
 
 注意：安装前可以检查一下`./packages/daemon.json`中的`data-root`参数，这个参数表示为docker的数据存储目录，默认为`/data/docker_data`，若有需求，可自行修改
 
-## 2.docker-compose.yml
+## docker-compose.yml
 
 定义部署所需的映像和配置文件参数
 
-## 3.alertmanager.yml
+## alertmanager.yml
 
 定义告警邮件配置参数
 
@@ -54,15 +54,15 @@ receivers:
 
 定义需要的警报规则的地方
 
-## 5.blackbox.yml
+## blackbox.yml
 
 定义黑盒描述文件参数
 
-## 6.prometheus.yml
+## prometheus.yml
 
 配置了监控、警报等
 
-## 7.修改变量文件.env
+## 修改变量文件.env
 
 ```bash
 # promethues镜像和版本
@@ -85,7 +85,7 @@ nodeexporter_image="registry.cn-chengdu.aliyuncs.com/su03/node-exporter:1.6.1-de
 prometheus_url="http://192.168.2.193:9090"
 ```
 
-## 7.面板json文件
+## 面板json文件
 
 ```bash
 # 仪表板文件配置了两个初始节点监视器面板
@@ -93,7 +93,7 @@ disk.json：Server disk usage is shown
 node-exporter-grafana.json：Server disk, io, cpu usage is displayed
 ```
 
-## 8.访问地址
+## 访问地址
 
 ```bash
 prometheus：http://IP:9090

@@ -9,17 +9,17 @@ The usage method is as follows (note: Before performing this operation, you need
 bash setup.sh / bash -x setup.sh
 ```
 
-## 1.setup.sh
+## setup.sh
 
 Define functions for installing Docker, Docker Compose, and the monitoring system. During the installation process, the main operation is to run this file.
 
 Note: Before installation, you can check the `data-root` parameter in `./packages/daemon.json`. This parameter indicates the directory for storing Docker data. The default is `/data/docker_data`. If necessary, you can modify it yourself.
 
-## 2.docker-compose.yml
+## docker-compose.yml
 
 Define the parameters of the images and configuration files required for deployment
 
-## 3.alertmanager.yml
+## alertmanager.yml
 
 Define the configuration parameters for alarm emails
 
@@ -50,19 +50,19 @@ receivers:
   - to: 'xxx'  
 ```
 
-## 4.rules.yml
+## rules.yml
 
 The place where the necessary alert rules need to be defined
 
-## 5.blackbox.yml
+## blackbox.yml
 
 Define the parameters of the black box description file
 
-## 6.prometheus.yml
+## prometheus.yml
 
 Equipped with monitoring, alerts, etc.
 
-## 7.modify variables file ".env"
+## modify variables file ".env"
 
 ```bash
 # promethues image and version
@@ -85,7 +85,7 @@ nodeexporter_image="registry.cn-chengdu.aliyuncs.com/su03/node-exporter:1.6.1-de
 prometheus_url="http://192.168.2.193:9090"
 ```
 
-## 7.Dashboard json file
+## Dashboard json file
 
 ```bash
 # The dashboard file is configured by default with two initial node monitor panels.
@@ -93,7 +93,7 @@ disk.json：Server disk usage is shown
 node-exporter-grafana.json：Server disk, io, cpu usage is displayed
 ```
 
-## 8.Access point
+## Access point
 
 ```bash
 prometheus：http://IP:9090
