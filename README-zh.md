@@ -1,7 +1,7 @@
 # ansible_keepalived
 本文档说明了如何使用ansible+keepalived(DR)+lvs+nfs+httpd快速实现web的负载均衡
 
-# 1.示例服务器
+## 示例服务器
 
 | IP                     | 用途                             |
 | ---------------------- | -------------------------------- |
@@ -10,9 +10,9 @@
 | 192.168.2.192（test3） | httpd                            |
 | 192.168.2.193（test4） | httpd                            |
 
-# 2.安装前
+## 安装前
 
-## 修改变量文件"./group_vars/all.yml"
+### 修改变量文件"./group_vars/all.yml"
 
 ```yaml
 vim group_vars/all.yml
@@ -46,7 +46,7 @@ nfs_share_dir: /app/share
 nfs_ipv6_disabled: true
 ```
 
-## 修改主机清单
+### 修改主机清单
 
 ```yaml
 [keepalived_master]   
@@ -75,7 +75,7 @@ keealived_web01
 keealived_web02
 ```
 
-## 修改setup.sh安装脚本
+### 修改setup.sh安装脚本
 
 ```sh
 # 服务器root密码，这里要求两台台服务器密码一致
@@ -83,13 +83,13 @@ export ssh_pass="sulibao"
 
 ```
 
-# 3.安装
+## 安装
 
 ```sh
 bash setup.sh
 ```
 
-# 4.验证httpd负载效果
+## 验证httpd负载效果
 
 ```bash
 [root@test2 ~]# for i in {1..10};do curl 192.168.2.100; done
@@ -103,7 +103,7 @@ test_web
 test_web
 test_web
 test_web
-#查看两台web的访问日志
+# 查看两台web的访问日志
 [root@test3 httpd]# cat access_log
 192.168.2.191 - - [29/May/2025:14:45:35 +0800] "GET / HTTP/1.1" 200 9 "-" "curl/7.29.0"
 192.168.2.191 - - [29/May/2025:14:45:35 +0800] "GET / HTTP/1.1" 200 9 "-" "curl/7.29.0"
@@ -120,9 +120,9 @@ test_web
 
 
 
-# 5.检查项
+## 检查项
 
-## VIP故障迁移
+### VIP故障迁移
 
 ```
 [root@test1 ansible_docker_docker-compose-main]# ip a| grep ens33
@@ -143,7 +143,7 @@ test_web
     inet 192.168.2.100/32 scope global ens33
 ```
 
-## VIP所在服务器上查看ipvsadm规则是否正常生成
+### VIP所在服务器上查看ipvsadm规则是否正常生成
 
 ```
 [root@test1 ansible_docker_docker-compose-main]# ipvsadm -Ln
@@ -155,7 +155,7 @@ TCP  192.168.2.100:80 rr
   -> 192.168.2.193:80             Route   1      0          0
 ```
 
-## WEB服务器上查看是否生成回环网卡连接和到达VIP的路由条目
+### WEB服务器上查看是否生成回环网卡连接和到达VIP的路由条目
 
 ```
 [root@test3 httpd]# ip a|grep lo

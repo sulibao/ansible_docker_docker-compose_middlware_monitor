@@ -1,7 +1,7 @@
 # ansible_keepalived
 This document explains how to use ansible + keepalived (DR) + lvs + nfs + httpd to quickly achieve web load balancing.
 
-# 1.Example server list
+## Example server list
 
 | IP                     | Purpose                          |
 | ---------------------- | -------------------------------- |
@@ -10,9 +10,9 @@ This document explains how to use ansible + keepalived (DR) + lvs + nfs + httpd 
 | 192.168.2.192（test3） | httpd                            |
 | 192.168.2.193（test4） | httpd                            |
 
-# 2.Before install
+## Before install
 
-## Modify the variables filr "./group_vars/all.yml"
+### Modify the variables filr "./group_vars/all.yml"
 
 ```yaml
 vim group_vars/all.yml
@@ -46,7 +46,7 @@ nfs_share_dir: /app/share
 nfs_ipv6_disabled: true
 ```
 
-## Modify the host list
+### Modify the host list
 
 ```yaml
 [keepalived_master]   
@@ -75,7 +75,7 @@ keealived_web01
 keealived_web02
 ```
 
-## Modify the setup.sh install file
+### Modify the setup.sh install file
 
 ```sh
 # Server root password. It is required that the passwords for both servers be the same.
@@ -83,13 +83,13 @@ export ssh_pass="sulibao"
 
 ```
 
-# 3.Install 
+## Install 
 
 ```sh
 bash setup.sh
 ```
 
-# 4.Verify the performance of httpd
+## Verify the performance of httpd
 
 ```bash
 [root@test2 ~]# for i in {1..10};do curl 192.168.2.100; done
@@ -120,9 +120,9 @@ test_web
 
 
 
-# 5.Check the entry
+## Check the entry
 
-## VIP failure switching
+### VIP failure switching
 
 ```
 [root@test1 ansible_docker_docker-compose-main]# ip a| grep ens33
@@ -143,7 +143,7 @@ test_web
     inet 192.168.2.100/32 scope global ens33
 ```
 
-## Check whether the ipvsadm rules are generated normally on the server where the VIP is located.
+### Check whether the ipvsadm rules are generated normally on the server where the VIP is located.
 
 ```
 [root@test1 ansible_docker_docker-compose-main]# ipvsadm -Ln
@@ -155,7 +155,7 @@ TCP  192.168.2.100:80 rr
   -> 192.168.2.193:80             Route   1      0          0
 ```
 
-## Check on the WEB server whether the loopback network card connection and the routing entries for reaching the VIP have been generated.
+### Check on the WEB server whether the loopback network card connection and the routing entries for reaching the VIP have been generated.
 
 ```
 [root@test3 httpd]# ip a|grep lo
