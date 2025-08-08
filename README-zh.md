@@ -1,52 +1,52 @@
 # ansible_keepalived
-This document explains how to use ansible + keepalived (DR) + lvs + nfs + httpd to quickly achieve web load balancing.
+本文档说明了如何使用ansible+keepalived(DR)+lvs+nfs+httpd快速实现web的负载均衡
 
-# 1.Example server list
+# 1.示例服务器
 
-| IP                     | Purpose                          |
+| IP                     | 用途                             |
 | ---------------------- | -------------------------------- |
 | 192.168.2.190（test1） | keepalived-master/lvs-config/nfs |
 | 192.168.2.191（test2） | keepalived-slave/lvs-config      |
 | 192.168.2.192（test3） | httpd                            |
 | 192.168.2.193（test4） | httpd                            |
 
-# 2.Before install
+# 2.安装前
 
-## Modify the variables filr "./group_vars/all.yml"
+## 修改变量文件"./group_vars/all.yml"
 
 ```yaml
 vim group_vars/all.yml
  
 docker_data_dir: /app/docker_data
-# master
-keepalived_masterIP: 192.168.2.190
-# slave
-keepalived_slaveIP: 192.168.2.191
-# routerid,the values need to be different
+# 主
+keepalived_masterIP: 192.168.2.190   
+# 从
+keepalived_slaveIP: 192.168.2.191    
+# routerid，主从需要不一致
 keepalived_master_routerid: LVS_DEVEL1   
 keepalived_slave_routerid: LVS_DEVEL2
-# Network card name. Fill in "master-slave" according to the actual situation
+# 网卡名称，主从按实际情况填写
 keepalived_master_interface: ens33    
 keepalived_slave_interface: ens33
-# Router group ID, master-slave consistency is required
+# router组id，主从需要一致
 keepalived_virtual_router_id: "51"   
-# Priority: Main > Subordinate
+# 优先级，主>从
 keepalived_master_priority: "100"   
 keepalived_slave_priority: "80"
-#password, master-slave consistency
+# password，主从一致
 keepalived_auth_pass: "1111"   
-# Required VIP Address Settings
+# 需要设置的VIP地址
 keepalived_vip: 192.168.2.100    
 keepalived_web01: 192.168.2.192
 keepalived_web01_port: "80"
 keepalived_web02: 192.168.2.193
 keepalived_web02_port: "80"
-# nfs directory for share
-nfs_share_dir: /app/share
+# nfs共享的目录
+nfs_share_dir: /app/share   
 nfs_ipv6_disabled: true
 ```
 
-## Modify the host list
+## 修改主机清单
 
 ```yaml
 [keepalived_master]   
@@ -75,21 +75,21 @@ keealived_web01
 keealived_web02
 ```
 
-## Modify the setup.sh install file
+## 修改setup.sh安装脚本
 
 ```sh
-# Server root password. It is required that the passwords for both servers be the same.
+# 服务器root密码，这里要求两台台服务器密码一致
 export ssh_pass="sulibao"  
 
 ```
 
-# 3.Install 
+# 3.安装
 
 ```sh
 bash setup.sh
 ```
 
-# 4.Verify the performance of httpd
+# 4.验证httpd负载效果
 
 ```bash
 [root@test2 ~]# for i in {1..10};do curl 192.168.2.100; done
@@ -103,7 +103,7 @@ test_web
 test_web
 test_web
 test_web
-# check the access logs from two web servers
+#查看两台web的访问日志
 [root@test3 httpd]# cat access_log
 192.168.2.191 - - [29/May/2025:14:45:35 +0800] "GET / HTTP/1.1" 200 9 "-" "curl/7.29.0"
 192.168.2.191 - - [29/May/2025:14:45:35 +0800] "GET / HTTP/1.1" 200 9 "-" "curl/7.29.0"
@@ -120,9 +120,9 @@ test_web
 
 
 
-# 5.Check the entry
+# 5.检查项
 
-## VIP failure switching
+## VIP故障迁移
 
 ```
 [root@test1 ansible_docker_docker-compose-main]# ip a| grep ens33
@@ -143,7 +143,7 @@ test_web
     inet 192.168.2.100/32 scope global ens33
 ```
 
-## Check whether the ipvsadm rules are generated normally on the server where the VIP is located.
+## VIP所在服务器上查看ipvsadm规则是否正常生成
 
 ```
 [root@test1 ansible_docker_docker-compose-main]# ipvsadm -Ln
@@ -155,7 +155,7 @@ TCP  192.168.2.100:80 rr
   -> 192.168.2.193:80             Route   1      0          0
 ```
 
-## Check on the WEB server whether the loopback network card connection and the routing entries for reaching the VIP have been generated.
+## WEB服务器上查看是否生成回环网卡连接和到达VIP的路由条目
 
 ```
 [root@test3 httpd]# ip a|grep lo
