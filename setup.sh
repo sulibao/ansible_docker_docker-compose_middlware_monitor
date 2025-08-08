@@ -197,12 +197,16 @@ function install_redis() {
   echo -e "\nInstalled redis."
 }
 
-get_arch_package
-check_docker
-check_docker_compose
-pull_ansible_image
-ensure_ansible
-create_ssh_key
-copy_ssh_key
-install_docker_slave
-install_redis
+function main() {
+  get_arch_package
+  check_docker
+  check_docker_compose
+  pull_ansible_image
+  ensure_ansible
+  create_ssh_key
+  copy_ssh_key
+  install_docker_slave
+  install_redis
+}
+
+main
