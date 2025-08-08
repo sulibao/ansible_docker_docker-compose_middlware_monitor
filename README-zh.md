@@ -2,7 +2,7 @@
 
 本文档用于说明如何使用ansible+docker+docker-compose快速部署一个包含4个副本的minio高可用分布式集群。
 
-# 示例服务器列表
+## 示例服务器列表
 
 | IP                     | 用途   |
 | :--------------------- | ------ |
@@ -13,9 +13,9 @@
 
 
 
-# 安装前
+## 安装前
 
-## 修改变量文件group_vars/all.yml
+### 修改变量文件group_vars/all.yml
 
 ```
 docker_data_dir: /app/docker_data   #docker数据目录
@@ -28,7 +28,7 @@ minio_ak: "admin"    #minio-ak
 minio_sk: "admin@2025"   #minio-sk
 ```
 
-## 修改ansible主机清单
+### 修改ansible主机清单
 
 ```
 [minio01]  #以下为部署minio的4个节点的IP地址
@@ -41,20 +41,20 @@ minio_sk: "admin@2025"   #minio-sk
 192.168.2.193
 ```
 
-## 修改setup.sh安装脚本
+### 修改setup.sh安装脚本
 
 ```
 vim setup.sh
 export ssh_pass="sulibao"     #这应该是服务器root用户的密码
 ```
 
-# 安装
+## 安装
 
 ```
 bash setup.sh
 ```
 
-# 安装后的验证
+## 安装后的验证
 
 - 命令行验证
 

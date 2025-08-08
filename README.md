@@ -2,7 +2,7 @@
 
 This document is intended to explain how to use Ansible, Docker, and Docker Compose to quickly deploy a highly available and distributed Minio cluster with four replicas.
 
-# Example server list
+## Example server list
 
 | IP                     | purpose|
 | :--------------------- | ------ |
@@ -13,9 +13,9 @@ This document is intended to explain how to use Ansible, Docker, and Docker Comp
 
 
 
-# Before install
+## Before install
 
-## Modify variables file "./group_vars/all.yml"
+### Modify variables file "./group_vars/all.yml"
 
 ```bash
 # docker's data directory
@@ -34,7 +34,7 @@ minio_ak: "admin"
 minio_sk: "admin@2025"   
 ```
 
-## Modify ansible host list
+### Modify ansible host list
 
 ```bash
 # The following are the IP addresses of the 4 nodes for deploying Minio
@@ -48,7 +48,7 @@ minio_sk: "admin@2025"
 192.168.2.193
 ```
 
-## Modify the install file setup.sh
+### Modify the install file setup.sh
 
 ```bash
 vim setup.sh
@@ -56,13 +56,13 @@ vim setup.sh
 export ssh_pass="sulibao"     
 ```
 
-# Install
+## Install
 
 ```
 bash setup.sh
 ```
 
-# Verification after Installation
+## Verification after Installation
 
 - Command line verification
 
