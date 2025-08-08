@@ -1,10 +1,10 @@
 # ansible_minio_cluster
 
-This document is intended to explain how to use Ansible, Docker, and Docker Compose to quickly deploy a highly available and distributed Minio cluster with four replicas.
+本文档用于说明如何使用ansible+docker+docker-compose快速部署一个包含4个副本的minio高可用分布式集群。
 
-# Example server list
+# 示例服务器列表
 
-| IP                     | purpose|
+| IP                     | 用途   |
 | :--------------------- | ------ |
 | 192.168.2.190（test1） | Minio1 |
 | 192.168.2.191（test2） | Minio2 |
@@ -13,32 +13,25 @@ This document is intended to explain how to use Ansible, Docker, and Docker Comp
 
 
 
-# Before install
+# 安装前
 
-## Modify variables file "./group_vars/all.yml"
+## 修改变量文件group_vars/all.yml
 
-```bash
-# docker's data directory
-docker_data_dir: /app/docker_data   
-# minio data directory
-minio_data: /app/minio_data   
-# minio access port
-minio_port: 9000       
-# minio-console access port      
-minio_console_port: 9001      
-# minio image
+```
+docker_data_dir: /app/docker_data   #docker数据目录
+minio_data: /app/minio_data    #minio数据目录
+minio_port: 9000              #minio端口
+minio_console_port: 9001      #minio-console端口
 image_minio: "registry.cn-chengdu.aliyuncs.com/su03/minio:RELEASE.2024-05-28T17-19-04Z"
-# minio-ak
-minio_ak: "admin"  
-# minio-sk  
-minio_sk: "admin@2025"   
+# minio镜像
+minio_ak: "admin"    #minio-ak
+minio_sk: "admin@2025"   #minio-sk
 ```
 
-## Modify ansible host list
+## 修改ansible主机清单
 
-```bash
-# The following are the IP addresses of the 4 nodes for deploying Minio
-[minio01]  
+```
+[minio01]  #以下为部署minio的4个节点的IP地址
 192.168.2.190
 [minio_others01]
 192.168.2.191
@@ -48,37 +41,32 @@ minio_sk: "admin@2025"
 192.168.2.193
 ```
 
-## Modify the install file setup.sh
+## 修改setup.sh安装脚本
 
-```bash
+```
 vim setup.sh
-# This should be filled in with the password of the server's root user.
-export ssh_pass="sulibao"     
+export ssh_pass="sulibao"     #这应该是服务器root用户的密码
 ```
 
-# Install
+# 安装
 
 ```
 bash setup.sh
 ```
 
-# Verification after Installation
+# 安装后的验证
 
-- Command line verification
+- 命令行验证
 
-```bash
-# Enter any node, any Minio container
-docker exec -it minio_data-minio-1 bash  
-# Set the alias of any node 
-bash-5.1# mc alias set mycluster http://test1:9000 admin admin@2025   
+```sh
+docker exec -it minio_data-minio-1 bash   #进入到任何节点，任何minio容器
+bash-5.1# mc alias set mycluster http://test1:9000 admin admin@2025   #设置任意节点的别名
 mc: Configuration written to `/tmp/.mc/config.json`. Please update your access credentials.
 mc: Successfully created `/tmp/.mc/share`.
 mc: Initialized share uploads `/tmp/.mc/share/uploads.json` file.
 mc: Initialized share downloads `/tmp/.mc/share/downloads.json` file.
 Added `mycluster` successfully. 
-
-# Check the cluster status. As shown below, it is a normal 4-replica online state.
-bash-5.1# mc admin info mycluster    
+bash-5.1# mc admin info mycluster    #查看集群状态，如下为正常的4副本在线状态
 ●  test1:9000
    Uptime: 16 minutes 
    Version: 2024-05-28T17:19:04Z
@@ -116,7 +104,7 @@ bash-5.1# mc admin info mycluster
 
 ```
 
-- The data directory for file upload verification on the page has been synchronized (access method: http://any-node IP:9000, admin/admin@2025)
+- 页面上传文件验证数据目录已同步（访问方法：http://任意节点IP:9000，admin/admin@2025）
 
 ```
 [root@test1 app]# ll minio_data/test/
